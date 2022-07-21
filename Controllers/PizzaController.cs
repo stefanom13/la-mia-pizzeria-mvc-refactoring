@@ -81,22 +81,57 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
         // GET: HomeController1/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            using (PizzaContext db = new PizzaContext())
+            {
+                Pizza pizzaEdit = db.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
+                if (pizzaEdit == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    PizzaCategorie model = new PizzaCategorie();
+
+                    model.Pizza = pizzaEdit;
+                    model.Categorie = db.Categorie.ToList();
+
+                    return View(model);
+                }
+            }
         }
 
         // POST: HomeController1/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, PizzaCategorie p)
         {
-            try
+            using (PizzaContext db = new PizzaContext())
             {
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    p.Categorie = db.Categorie.ToList();
+                    return View("Edit", p);
+                }
+
+                Pizza pizzaEdit = db.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
+
+
+                if (pizzaEdit != null)
+                {
+                    pizzaEdit.NomePizza = p.Pizza.NomePizza;
+                    pizzaEdit.Descrizione = p.Pizza.Descrizione;
+                    pizzaEdit.PathImage = p.Pizza.PathImage;
+                    pizzaEdit.Prezzo = p.Pizza.Prezzo;
+                    pizzaEdit.CategoriaId = p.Pizza.CategoriaId;
+
+                    db.SaveChanges();
+                }
+                else
+                {
+                    return NotFound(View("Error"));
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
 
         // GET: HomeController1/Delete/5

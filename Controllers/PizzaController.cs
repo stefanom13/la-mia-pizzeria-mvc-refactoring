@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using la_mia_pizzeria_mvc_refactoring.Database;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_mia_pizzeria_mvc_refactoring.Controllers
 {
@@ -8,7 +10,16 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
         // GET: HomeController1
         public ActionResult Index()
         {
-            return View();
+            using (PizzaContext db = new PizzaContext())
+            {
+                IQueryable<Pizza> listPizza = db.Pizze.Include(piz => piz.Categorie);
+                // List<Pizza> listPizza = db.Pizzas.OrderBy(pizza => pizza.Id).ToList<Pizza>();
+                if (listPizza == null)
+                {
+                    return NotFound("Pizze non presenti");
+                }
+                return View("Index", listPizza.ToList());
+            }
         }
 
         // GET: HomeController1/Details/5

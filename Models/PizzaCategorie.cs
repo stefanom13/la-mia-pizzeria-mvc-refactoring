@@ -6,20 +6,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-
-    
-    public class PizzaCategorie
+public class PizzaCategorie
     {
 
    
         public Pizza Pizza { set; get; }
         public List<Categoria>? Categorie { get; set; }
-
-
-
+        
     
-        public PizzaCategorie()
+        public List<SelectListItem>? ListaIngredienti { get; set; }
+        public List<string>? SelezionaIngrediente { get; set; }
+
+
+
+    public PizzaCategorie()
         {
 
 

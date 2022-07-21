@@ -22,8 +22,22 @@
             <h3>Prezzo</h3>
             <span>@Model.Prezzo &euro;</span>
              <h3>Categoria</h3>
-              <span>@Model.Categorie.NomeCategoria</span>   
-            
+              <span>@Model.Categorie.NomeCategoria</span>
+              <div>
+                  <h3>Ingredienti</h3>
+                 @if(Model.Ingredienti.Count() > 0)
+                {
+                    foreach(Ingredienti ing in Model.Ingredienti)
+                    {                
+                        <span> @ing.NomeIngrediente</span>
+                    }
+                }
+                else
+                {
+                    <span>Per il momento non ci sono ingredienti</span>
+                }
+              </div>
+
          </div>
     <a  class="btn btn-danger mt-2 " href="@Url.Action("Index","Pizza")">Indietro</a>
 </div>

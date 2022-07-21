@@ -37,6 +37,7 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
                 }
                 else
                 {
+                    db.Entry(pizza).Collection("Ingredienti").Load();
                     return View("Details", pizza);
                 }
             }

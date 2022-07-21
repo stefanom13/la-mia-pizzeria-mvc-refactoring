@@ -43,7 +43,15 @@
                         <option value="@categoria.Id">@categoria.NomeCategoria</option>
                     }
                 }
-            </select>                        
+            </select>    
+              <div class="mb-3">
+            <strong>Ingredienti:</strong>
+            <select asp-for="SelezionaIngrediente" 
+                    asp-items="@Model.ListaIngredienti" 
+                    multiple 
+                    class="form-control mb-2">
+            </select>
+        </div>
             
         </div>
         <div>

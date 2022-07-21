@@ -1,8 +1,8 @@
 ﻿using la_mia_pizzeria_mvc_refactoring.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace la_mia_pizzeria_mvc_refactoring.Controllers
 {
@@ -49,13 +49,19 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
             using (PizzaContext db = new PizzaContext())
             {
                 List<Categoria> categoria = db.Categorie.ToList();
+               // List<Ingredienti> ListaIngredieni = db.Ingrediente.ToList();
                 PizzaCategorie model = new PizzaCategorie();
 
-                model.Categorie = categoria;
                 model.Pizza = new Pizza();
+                model.Categorie = categoria;
+                model.ListaIngredienti = NuovoMetodo();
+                
+                
                 return View(model);
             }
         }
+
+        
 
         // POST: HomeController1/Create
         [HttpPost]
@@ -64,19 +70,67 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
         {
             using (PizzaContext db = new PizzaContext())
             {
+
+
                 if (!ModelState.IsValid)
                 {
-                    p.Categorie = db.Categorie.ToList();
+                    List<Categoria> categoria = db.Categorie.ToList();
+                    // List<Ingredienti> ListaIngredieni = db.Ingrediente.ToList();
+
+
+                    p.Pizza = new Pizza();
+                    p.Categorie = categoria;
+                    p.ListaIngredienti = NuovoMetodo();
+
+
                     return View("Create", p);
+                    /// p.Categorie = db.Categorie.ToList();
+                    // return View("Create", p);
+                }
+            }
+                using (PizzaContext db = new PizzaContext())
+                {
+                    Pizza newPizza = new Pizza();
+                    newPizza.NomePizza = p.Pizza.NomePizza;
+                    newPizza.Descrizione = p.Pizza.Descrizione;
+                    newPizza.Prezzo = p.Pizza.Prezzo;
+                    newPizza.PathImage = p.Pizza.PathImage;
+                    newPizza.CategoriaId = p.Pizza.CategoriaId;
+                    newPizza.Ingredienti = new List<Ingredienti>();
+
+                    if (p.SelezionaIngrediente != null)
+                    {
+                        foreach (string ingredient in p.SelezionaIngrediente)
+                        {
+                            int selectedIntTagId = Int32.Parse(ingredient);
+
+                            Ingredienti ingrediente = db.Ingrediente.Where(p => p.Id == selectedIntTagId).FirstOrDefault();
+
+                            newPizza.Ingredienti.Add(ingrediente);
+                        }
+                    }
+                    db.Pizze.Add(newPizza);
+
+                    db.SaveChanges();
+                   
+                }
+            return RedirectToAction("Index");
+
+        }
+        static List<SelectListItem>? NuovoMetodo()
+        {
+            using (PizzaContext db = new PizzaContext())
+            {
+                List<SelectListItem> ingredientiLista = new List<SelectListItem>();
+                List<Ingredienti> ingredients = db.Ingrediente.ToList();
+
+                foreach (Ingredienti ingrediente in ingredients)
+                {
+                    ingredientiLista.Add(new SelectListItem() { Text = ingrediente.NomeIngrediente, Value = ingrediente.Id.ToString() });
                 }
 
-                db.Pizze.Add(p.Pizza);
-                db.SaveChanges();
-
+                return ingredientiLista;
             }
-
-
-            return RedirectToAction("Index");
         }
 
         // GET: HomeController1/Edit/5

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace la_mia_pizzeria_mvc_refactoring.Controllers
 {
     public class PizzaController : Controller
@@ -25,28 +26,56 @@ namespace la_mia_pizzeria_mvc_refactoring.Controllers
         // GET: HomeController1/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            using (PizzaContext db = new PizzaContext())
+            {
+                //Pizza pizza = db.Pizzas.Where(pizza => pizza.Id == id).FirstOrDefault();
+                Pizza pizza = db.Pizze.Where(pizza => pizza.Id == id).Include(cat => cat.Categorie).FirstOrDefault();
+
+                if (pizza == null)
+                {
+                    return NotFound("Pizza non trovata");
+                }
+                else
+                {
+                    return View("Details", pizza);
+                }
+            }
         }
 
         // GET: HomeController1/Create
         public ActionResult Create()
         {
-            return View();
+            using (PizzaContext db = new PizzaContext())
+            {
+                List<Categoria> categoria = db.Categorie.ToList();
+                PizzaCategorie model = new PizzaCategorie();
+
+                model.Categorie = categoria;
+                model.Pizza = new Pizza();
+                return View(model);
+            }
         }
 
         // POST: HomeController1/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(PizzaCategorie p)
         {
-            try
+            using (PizzaContext db = new PizzaContext())
             {
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    p.Categorie = db.Categorie.ToList();
+                    return View("Create", p);
+                }
+
+                db.Pizze.Add(p.Pizza);
+                db.SaveChanges();
+
             }
-            catch
-            {
-                return View();
-            }
+
+
+            return RedirectToAction("Index");
         }
 
         // GET: HomeController1/Edit/5

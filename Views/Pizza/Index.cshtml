@@ -38,11 +38,11 @@ else
                        @*parte categorie*@
                      @if (@pizza.Categorie != null)
                     {
-                       <h4 class="align-middle">@pizza.Categorie.NomeCategoria</h4>
+                       <p class="align-middle">@pizza.Categorie.NomeCategoria</p>
                     }
                     else
                     {
-                        <h4 class="align-middle">Nessuna Categoria presente</h4>
+                        <p class="align-middle">Nessuna Categoria presente</p>
                     }
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">@pizza.Prezzo.ToString("C2")</li>
